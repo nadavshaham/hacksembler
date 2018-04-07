@@ -22,13 +22,155 @@ namespace hacksembler
             private string currentCommand;
             private string full_C_Command;
             private string A_Command_StringBinary;
- 
-
+            public string newcommand_symbol;
+            public string currentCommand_dest;
+            public string currentCommand_comp;
 
             public Parser(string sourcePath)
             {
                 sourceFile = new System.IO.StreamReaderM(sourcePath);
                 Advance();
+            }
+
+            public string DestMatrix(string currentCommand2)
+            {
+                if (currentCommand2 == "0")
+                    return "000";
+                int coll = 0;
+                string[,] matrix = new string[8, 2];
+                matrix[0, 0] = "null";
+                matrix[0, 1] = "000";
+                matrix[1, 0] = "M";
+                matrix[1, 1] = "001";
+                matrix[2, 0] = "D";
+                matrix[2, 1] = "010";
+                matrix[3, 0] = "MD";
+                matrix[3, 1] = "011";
+                matrix[4, 0] = "A";
+                matrix[4, 1] = "100";
+                matrix[5, 0] = "AM";
+                matrix[5, 1] = "101";
+                matrix[6, 0] = "AD";
+                matrix[6, 1] = "110";
+                matrix[7, 0] = "AMD";
+                matrix[7, 1] = "111";
+                for (int row = 0; row < matrix.GetLength(0); row++)
+                {
+
+                    if (currentCommand2 == matrix[row, coll])
+                    {
+                        currentCommand2 = matrix[row, coll + 1];
+                        return currentCommand2;
+                    }
+
+                }
+                return "error";
+
+            }
+            public string CompMatrix(string currentCommand2)
+            {
+                int coll = 0;
+                string[,] matrix = new string[28, 2];
+                matrix[0, 0] = "0";
+                matrix[0, 1] = "0101010";
+                matrix[1, 0] = "1";
+                matrix[1, 1] = "0111111";
+                matrix[2, 0] = "-1";
+                matrix[2, 1] = "0111010";
+                matrix[3, 0] = "D";
+                matrix[3, 1] = "0001100";
+                matrix[4, 0] = "A";
+                matrix[4, 1] = "0110000";
+                matrix[5, 0] = "!D";
+                matrix[5, 1] = "0001101";
+                matrix[6, 0] = "!A";
+                matrix[6, 1] = "0110001";
+                matrix[7, 0] = "-D";
+                matrix[7, 1] = "0001111";
+                matrix[8, 0] = "-A";
+                matrix[8, 1] = "0110011";
+                matrix[9, 0] = "D+1";
+                matrix[9, 1] = "0011111";
+                matrix[10, 0] = "A+1";
+                matrix[10, 1] = "0110111";
+                matrix[11, 0] = "D-1";
+                matrix[11, 1] = "0001110";
+                matrix[12, 0] = "A-1";
+                matrix[12, 1] = "0110010";
+                matrix[13, 0] = "D+A";
+                matrix[13, 1] = "0000010";
+                matrix[14, 0] = "D-A";
+                matrix[14, 1] = "0010011";
+                matrix[15, 0] = "A-D";
+                matrix[15, 1] = "0000111";
+                matrix[16, 0] = "D&A";
+                matrix[16, 1] = "0000000";
+                matrix[17, 0] = "D|A";
+                matrix[17, 1] = "0010101";
+                matrix[18, 0] = "M";
+                matrix[18, 1] = "1110000";
+                matrix[19, 0] = "!M";
+                matrix[19, 1] = "1110001";
+                matrix[20, 0] = "-M";
+                matrix[20, 1] = "1110011";
+                matrix[21, 0] = "M+1";
+                matrix[21, 1] = "1110111";
+                matrix[22, 0] = "M-1";
+                matrix[22, 1] = "1110010";
+                matrix[23, 0] = "D+M";
+                matrix[23, 1] = "1000010";
+                matrix[24, 0] = "D-M";
+                matrix[24, 1] = "1010011";
+                matrix[25, 0] = "M-D";
+                matrix[25, 1] = "1000111";
+                matrix[26, 0] = "D&M";
+                matrix[26, 1] = "1000000";
+                matrix[27, 0] = "D|M";
+                matrix[27, 1] = "010101";
+                for (int row = 0; row < matrix.GetLength(0); row++)
+                {
+
+                    if (currentCommand2 == matrix[row, coll])
+                    {
+                        currentCommand2 = matrix[row, coll + 1];
+                        return currentCommand2;
+                    }
+                }
+                return "error";
+            }
+
+            public string JumpMatrix(string currentCommand2)
+            {
+                int coll = 0;
+                string[,] matrix = new string[8, 2];
+                matrix[0, 0] = "null";
+                matrix[0, 1] = "000";
+                matrix[1, 0] = "JGT";
+                matrix[1, 1] = "001";
+                matrix[2, 0] = "JEQ";
+                matrix[2, 1] = "010";
+                matrix[3, 0] = "JGE";
+                matrix[3, 1] = "011";
+                matrix[4, 0] = "JLT ";
+                matrix[4, 1] = "100";
+                matrix[5, 0] = "JNE";
+                matrix[5, 1] = "101";
+                matrix[6, 0] = "JLE";
+                matrix[6, 1] = "110";
+                matrix[7, 0] = "JMP";
+                matrix[7, 1] = "111";
+                for (int row = 0; row < matrix.GetLength(0); row++)
+                {
+
+
+                    if (currentCommand2 == matrix[row, coll])
+                    {
+                        currentCommand2 = matrix[row, coll + 1];
+                        return currentCommand2;
+                    }
+
+                }
+                return "errorjump";
             }
 
             // Are there more commands in the input?
@@ -107,7 +249,7 @@ namespace hacksembler
 
             //Returns the symbol or decimal xxx of the current command @xxx or(xxx)
             //Should be called only when commandType() is A_COMMAND or L_COMMAND
-            public string Symbol()
+            public void Symbol()
             {
                 int a;
                 int length;
@@ -126,80 +268,82 @@ namespace hacksembler
                     newCommand = binary + currentCommand1;
                     A_Command_StringBinary += newCommand+"\n";
 
-                    return newCommand;
+                     
                 }
-                return "";
+                
             }
 
             //Return the dest mnemonic in the current C command (8 possibilities)
             //Should  be called only when commandType() is C_COMMAND
-            public string Dest()
+            public void Dest()
             {
-                if (CommandType() == commandType.C_COMMAND)
-                {
+                
 
 
 
 
-                    int coll = 0;
-                    string currentCommand1 = currentCommand;
+                   // int coll = 0;
+                    currentCommand_dest = currentCommand;
                     int index = currentCommand.IndexOf("=");
                     int index2 = currentCommand.IndexOf(";");
                     if (index > 0)
-                        currentCommand1 = currentCommand1.Substring(0, index);
+                    currentCommand_dest = currentCommand_dest.Substring(0, index);
                     if (index2 > 0)
-                        currentCommand1 = currentCommand1.Substring(0, index2);
-                    //creating the mnemonic table
-                    string[,] matrix = new string[8, 2];
-                    matrix[0, 0] = "null";
-                    matrix[0, 1] = "000";
-                    matrix[1, 0] = "M";
-                    matrix[1, 1] = "001";
-                    matrix[2, 0] = "D";
-                    matrix[2, 1] = "010";
-                    matrix[3, 0] = "MD";
-                    matrix[3, 1] = "011";
-                    matrix[4, 0] = "A";
-                    matrix[4, 1] = "100";
-                    matrix[5, 0] = "AM";
-                    matrix[5, 1] = "101";
-                    matrix[6, 0] = "AD";
-                    matrix[6, 1] = "110";
-                    matrix[7, 0] = "AMD";
-                    matrix[7, 1] = "111";
-                    for (int row = 0; row < matrix.GetLength(0); row++)
-                    {
+                    currentCommand_dest = currentCommand_dest.Substring(0, index2);
+                currentCommand_dest = DestMatrix(currentCommand_dest);
 
-                            if (currentCommand1 == matrix[row, coll])
-                            {
-                                currentCommand1 = matrix[row, coll + 1];
-                                return currentCommand1;
-                            }
+                //creating the mnemonic table
+                /*
+                 string[,] matrix = new string[8, 2];
+                matrix[0, 0] = "null";
+                matrix[0, 1] = "000";
+                matrix[1, 0] = "M";
+                matrix[1, 1] = "001";
+                matrix[2, 0] = "D";
+                matrix[2, 1] = "010";
+                matrix[3, 0] = "MD";
+                matrix[3, 1] = "011";
+                matrix[4, 0] = "A";
+                matrix[4, 1] = "100";
+                matrix[5, 0] = "AM";
+                matrix[5, 1] = "101";
+                matrix[6, 0] = "AD";
+                matrix[6, 1] = "110";
+                matrix[7, 0] = "AMD";
+                matrix[7, 1] = "111";
+                for (int row = 0; row < matrix.GetLength(0); row++)
+                {
 
-                    }
-                    //for (int coll = 0; coll < matrix.GetLength(1); coll++)
-                    return "not a C_Command";
+                        if (currentCommand1 == matrix[row, coll])
+                        {
+                            currentCommand1 = matrix[row, coll + 1];
+                            return currentCommand1;
+                        }
 
                 }
-                else
-                    return "";
+                */
+                //for (int coll = 0; coll < matrix.GetLength(1); coll++)
+                
             }
-
+            
             //Returns the comp mnemonic in the current C command(28 possibilities)
             //Should be called only when commandType() is C_COMMAND
-            public string Comp()
+            public void Comp()
             {
-                if (CommandType() == commandType.C_COMMAND)
-                {
+                
+                
                     if (currentCommand.Contains("="))
                     {
                         char tab = '\u0009';
 
-                        int coll = 0;
-                        string currentCommand1 = currentCommand.Replace(tab.ToString(), "");
+                       // int coll = 0;
+                        string currentCommand_comp = currentCommand.Replace(tab.ToString(), "");
                         int index = currentCommand.IndexOf("=");
                         if (index > 0)
-                            currentCommand1 = currentCommand1.Substring(index + 1);
+                        currentCommand_comp = currentCommand_comp.Substring(index + 1);
+                        currentCommand_comp = CompMatrix(currentCommand_comp);
+                        
+                        /*
                         string[,] matrix = new string[28, 2];
                         matrix[0, 0] = "0";
                         matrix[0, 1] = "0101010";
@@ -266,23 +410,24 @@ namespace hacksembler
                                 return currentCommand1;
                             }
                         }
-                        return currentCommand1;
+                        */
+                        //return currentCommand1;
 
                     }
                     else
                         return "0101010";
-                }
+                
 
-             return "";
+             
             }
 
             //returns the jump mnemonic im the current C command (8 possibilities)
             //Should be called only when commandType() is C_COMMAND
             public string Jump()
             {
-                if (CommandType() == commandType.C_COMMAND)
+                
 
-                {
+                
                     if (currentCommand.Contains(";"))
                     {
                         char tab = '\u0009';
@@ -291,6 +436,9 @@ namespace hacksembler
                         int index = currentCommand.IndexOf(";");
                         if (index > 0)
                             currentCommand1 = currentCommand1.Substring(index + 1);
+                        currentCommand1 = JumpMatrix(currentCommand1);
+                        return currentCommand1;
+                        /*
                         string[,] matrix = new string[8, 2];
                         matrix[0, 0] = "null";
                         matrix[0, 1] = "000";
@@ -319,19 +467,19 @@ namespace hacksembler
                             }
 
                         }
-
+                        */
 
                     }
                     else
                         return "000";
-                    return "error";
-                }
+                    
+                
 
 
-                return "";
+                
             }
 
-            /*
+            
             public string Parse()
             {
                 int counter = 0;
@@ -354,7 +502,7 @@ namespace hacksembler
                 Console.ReadLine();
                 return symbol_counter.ToString();
             }
-            */
+            
         }
         static void Main(string[] args)
         {
